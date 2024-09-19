@@ -1,0 +1,5 @@
+fastapi
+keycloak
+sqlalchemy
+pydantic
+python-dotenv
