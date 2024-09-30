@@ -1,9 +1,18 @@
-from datetime import datetime
+import smtplib
+import os
+from email.mime.text import MIMEText
 
-def format_date(date: datetime) -> str:
-    return date.strftime("%Y-%m-%d %H:%M:%S")
+def send_email(to_address, subject, message):
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = os.getenv("SMTP_PORT")
+    smtp_username = os.getenv("SMTP_USERNAME")
+    smtp_password = os.getenv("SMTP_PASSWORD")
 
-def calculate_average(grades: list[int]) -> float:
-    if len(grades) == 0:
-        return 0
-    return sum(grades) / len(grades)
+    msg = MIMEText(message)
+    msg["Subject"] = subject
+    msg["From"] = smtp_username
+    msg["To"] = to_address
+
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.login(smtp_username, smtp_password)
+        server.sendmail(smtp_username, [to_address], msg.as_string())

@@ -4,6 +4,11 @@ from . import models, schemas
 # CRUD Operations
 
 def create_school(db: Session, school: schemas.SchoolCreate):
+    # Check for existing school with the same name
+    existing_school = db.query(models.School).filter(models.School.name == school.name).first()
+    if existing_school:
+        raise HTTPException(status_code=400, detail="School with this name already exists.")
+    
     db_school = models.School(**school.dict())
     db.add(db_school)
     db.commit()
@@ -40,13 +45,6 @@ def create_assignment(db: Session, assignment: schemas.AssignmentCreate):
 
 def get_assignment(db: Session, assignment_id: int):
     return db.query(models.Assignment).filter(models.Assignment.id == assignment_id).first()
-
-def create_class(db: Session, class_: schemas.ClassCreate):
-    db_class = models.Class(**class_.dict())
-    db.add(db_class)
-    db.commit()
-    db.refresh(db_class)
-    return db_class
 
 def get_class(db: Session, class_id: int):
     return db.query(models.Class).filter(models.Class.id == class_id).first()
